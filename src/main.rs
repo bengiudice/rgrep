@@ -11,11 +11,6 @@ fn main() {
         process::exit(1);
     });
 
-    println!(
-        "Searching for '{}' in file '{}': \n",
-        config.query, config.file_path
-    );
-
     if let Err(e) = rgrep::run(config) {
         println!("Application error: {e}");
         process::exit(1);
