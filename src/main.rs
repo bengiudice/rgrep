@@ -1,22 +1,35 @@
-use std::{env, fs};
+use std::{env, fs, process};
 
 fn main() {
     //TODO: handle panic on invalid unicode
     let args: Vec<String> = env::args().collect();
 
-    let (query, file_path) = parse_config(&args);
+    let config = Config::build(&args).unwrap_or_else(|err| {
+        println!("Problem parsing arguments: {err}");
+        process::exit(1);
+    });
 
-    let contents = fs::read_to_string(file_path).expect("Error while reading file.");
+    let contents = fs::read_to_string(&config.file_path).expect("Error while reading file.");
 
-    println!("Searching for {}", query);
-    println!("In file {}", file_path);
+    println!("Searching for {}", config.query);
+    println!("In file {}", config.file_path);
 
     println!("With text:\n{contents}");
 }
 
-fn parse_config<'a>(args: &Vec<String>) -> (&String, &String) {
-    let query = &args[1]; // TODO handle panic
-    let file_path = &args[2]; // TODO handle panic
+struct Config {
+    query: String,
+    file_path: String,
+}
 
-    (query, file_path)
+impl Config {
+    fn build(args: &Vec<String>) -> Result<Config, &'static str> {
+        if args.len() < 3 {
+            return Err("Not enough arguments");
+        }
+        let query = args[1].clone(); // TODO avoid clone
+        let file_path = args[2].clone(); // TODO avoid clone
+
+        Ok(Config { query, file_path })
+    }
 }
