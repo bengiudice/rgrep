@@ -9,10 +9,14 @@ fn main() {
         process::exit(1);
     });
 
-    let contents = fs::read_to_string(&config.file_path).expect("Error while reading file.");
-
     println!("Searching for {}", config.query);
     println!("In file {}", config.file_path);
+
+    run(config);
+}
+
+fn run(config: Config) {
+    let contents = fs::read_to_string(&config.file_path).expect("Error while reading file.");
 
     println!("With text:\n{contents}");
 }
@@ -25,7 +29,7 @@ struct Config {
 impl Config {
     fn build(args: &Vec<String>) -> Result<Config, &'static str> {
         if args.len() < 3 {
-            return Err("Not enough arguments");
+            return Err("not enough arguments");
         }
         let query = args[1].clone(); // TODO avoid clone
         let file_path = args[2].clone(); // TODO avoid clone
