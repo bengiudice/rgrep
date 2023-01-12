@@ -1,4 +1,4 @@
-use std::{env, error::Error, fs};
+use std::{env, error::Error, fs, path::PathBuf};
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(&config.file_path)?;
     let results = if config.ignore_case {
@@ -26,7 +26,7 @@ pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a st
 }
 pub struct Config {
     pub query: String,
-    pub file_path: String,
+    pub file_path: PathBuf,
     pub ignore_case: bool,
 }
 impl Config {
@@ -38,7 +38,7 @@ impl Config {
             None => return Err("Didn't get a query string"),
         };
         let file_path = match args.next() {
-            Some(arg) => arg,
+            Some(arg) => PathBuf::from(arg),
             None => return Err("Didn't get a file path"),
         };
         let ignore_case = env::var("IGNORE_CASE").is_ok();
